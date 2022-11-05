@@ -4,7 +4,7 @@ import {User} from '../pages/todoList/list'
 import { useMount } from "../utils";
 import { http } from "../utils/http";
 
-interface AuthForm{
+export interface AuthForm{
     username: string,
     password: string
 }
