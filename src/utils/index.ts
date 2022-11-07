@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 export const useMount = (callback: () => void) => {
   useEffect(() => {
     callback();
+     // TODO 依赖项里加上callback会造成无限循环，这个和useCallback以及useMemo有关系
   }, []);
 };
 export const useDebounce = <V>(value: V, delay?: number) => {
@@ -47,15 +48,23 @@ export const isFalsy = (val: unknown) => (val === 0 ? false : !val);
  * @param obj
  * @returns
  */
-export const cleanObject = (obj: object) => {
-  const result = { ...obj };
-  Object.keys(obj).forEach(key => {
-    // @ts-ignore
-    const value = obj[key];
-    if (isFalsy(value)) {
-      // @ts-ignore
-      delete result[key];
-    }
-  });
-  return result;
-};
+ export const isVoid = ( value: unknown ) =>
+ value === undefined || value === null || value === ''
+
+// 在一个函数里，改变传入的对象本身是不好的
+// object就要这种键值对的形式{ [key: string]: unknown }
+export const cleanObject = ( object?: { [key: string]: unknown } ) => {
+ // 不操作原来的对象，自己的生成一个对象
+ // Object.assign({}, object)
+ if ( !object ) {
+   return {}
+ }
+ const result = { ...object }
+ Object.keys( result ).forEach( key => {
+   const value = result[key]
+   if ( isVoid( value ) ) {
+     delete result[key]
+   }
+ } )
+ return result
+}
